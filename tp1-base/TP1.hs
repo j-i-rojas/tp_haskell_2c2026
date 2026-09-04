@@ -76,8 +76,12 @@ foldCircuito cCaja cSerie cParalelo =
         (\cajaEntrada _ resultadoIzquierdo _ resultadoDerecho cajaSalida -> cParalelo cajaEntrada resultadoIzquierdo resultadoDerecho cajaSalida)
 
 -- 3 invertido
-
-invertido = undefined -- TODO: COMPLETAR
+invertido :: Circuito -> Circuito
+invertido = foldCircuito cajaInvertida serieInvertida paraleloInvertido
+    where
+        cajaInvertida caja = Caja caja
+        serieInvertida resultadoInicial resultadoFinal = Serie resultadoFinal resultadoInicial
+        paraleloInvertido cajaEntrada resultadoIzquierdo resultadoDerecho cajaSalida = Paralelo cajaSalida resultadoDerecho resultadoIzquierdo cajaEntrada
 
 -- 4: hayCaminoIluminado
 
