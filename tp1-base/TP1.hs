@@ -72,8 +72,8 @@ foldCircuito ::
 foldCircuito cCaja cSerie cParalelo =
     recCircuito
         cCaja
-        (\_ circuitoInicial _ circuitoFinal -> cSerie circuitoInicial circuitoFinal)
-        (\cajaEntrada _ circuitoIzquierdo _ circuitoDerecho cajaSalida -> cParalelo cajaEntrada circuitoIzquierdo circuitoDerecho cajaSalida)
+        (\_ resultadoInicial _ resultadoFinal -> cSerie resultadoInicial resultadoFinal)
+        (\cajaEntrada _ resultadoIzquierdo _ resultadoDerecho cajaSalida -> cParalelo cajaEntrada resultadoIzquierdo resultadoDerecho cajaSalida)
 
 -- 3 invertido
 
