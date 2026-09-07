@@ -1,87 +1,103 @@
 module TP1 where
 
 data Caja = Bombilla Bool | Nada
-              deriving Eq
+  deriving (Eq)
+
 instance Show Caja where
-    show = showDeCaja
+  show = showDeCaja
 
 showDeCaja :: Caja -> String
 showDeCaja (Bombilla True) = "💡"
 showDeCaja (Bombilla False) = "⚪️"
 showDeCaja (Nada) = "🛑"
 
-data Circuito = Caja     Caja
-              | Serie    Circuito Circuito
-              | Paralelo Caja Circuito Circuito Caja
-                  deriving Eq
+data Circuito
+  = Caja Caja
+  | Serie Circuito Circuito
+  | Paralelo Caja Circuito Circuito Caja
+  deriving (Eq)
+
 instance Show Circuito where
-    show = showDeCircuito
+  show = showDeCircuito
 
 showDeCircuito :: Circuito -> String
 showDeCircuito (Caja caja) = showDeCaja caja
 showDeCircuito (Serie circuitoInicial circuitoFinal) =
   (showDeCircuito circuitoInicial) ++ "-" ++ (showDeCircuito circuitoFinal)
 showDeCircuito (Paralelo cajaEntrada circuitoIzquierdo circuitoDerecho cajaSalida) =
-  (showDeCaja cajaEntrada) ++
-  "{" ++ (showDeCircuito circuitoIzquierdo) ++ "}" ++
-  "{" ++ (showDeCircuito circuitoDerecho) ++ "}" ++
-  (showDeCaja cajaSalida)
+  (showDeCaja cajaEntrada)
+    ++ "{"
+    ++ (showDeCircuito circuitoIzquierdo)
+    ++ "}"
+    ++ "{"
+    ++ (showDeCircuito circuitoDerecho)
+    ++ "}"
+    ++ (showDeCaja cajaSalida)
 
 showDeCircuitoConEstructura :: Circuito -> String
 showDeCircuitoConEstructura (Caja caja) = showDeCaja caja
-showDeCircuitoConEstructura (Serie circuitoInicial circuitoFinal) = "(" ++
-  (showDeCircuitoConEstructura circuitoInicial) ++
-    "-" ++
-  (showDeCircuitoConEstructura circuitoFinal) ++ ")"
+showDeCircuitoConEstructura (Serie circuitoInicial circuitoFinal) =
+  "("
+    ++ (showDeCircuitoConEstructura circuitoInicial)
+    ++ "-"
+    ++ (showDeCircuitoConEstructura circuitoFinal)
+    ++ ")"
 showDeCircuitoConEstructura (Paralelo cajaEntrada circuitoIzquierdo circuitoDerecho cajaSalida) =
-  (showDeCaja cajaEntrada) ++
-  "{" ++ (showDeCircuitoConEstructura circuitoIzquierdo) ++ "}" ++
-  "{" ++ (showDeCircuitoConEstructura circuitoDerecho) ++ "}" ++
-  (showDeCaja cajaSalida)
+  (showDeCaja cajaEntrada)
+    ++ "{"
+    ++ (showDeCircuitoConEstructura circuitoIzquierdo)
+    ++ "}"
+    ++ "{"
+    ++ (showDeCircuitoConEstructura circuitoDerecho)
+    ++ "}"
+    ++ (showDeCaja cajaSalida)
 
-on  = Bombilla True
+on = Bombilla True
+
 off = Bombilla False
 
-cajaOn   = Caja on
-cajaOff  = Caja off
+cajaOn = Caja on
+
+cajaOff = Caja off
+
 cajaNada = Caja Nada
 
 -- 1: recCircuito
 recCircuito ::
-    (Caja -> b) ->
-    (Circuito -> b -> Circuito -> b -> b) ->
-    (Caja -> Circuito -> b -> Circuito -> b -> Caja -> b) ->
-    Circuito ->
-    b
+  (Caja -> b) ->
+  (Circuito -> b -> Circuito -> b -> b) ->
+  (Caja -> Circuito -> b -> Circuito -> b -> Caja -> b) ->
+  Circuito ->
+  b
 recCircuito cCaja cSerie cParalelo c =
-    case c of
-        Caja caja -> cCaja caja
-        Serie circuitoInicial circuitoFinal -> cSerie circuitoInicial (rec circuitoInicial) circuitoFinal (rec circuitoFinal)
-        Paralelo cajaEntrada circuitoIzquierdo circuitoDerecho cajaSalida -> cParalelo cajaEntrada circuitoIzquierdo (rec circuitoIzquierdo) circuitoDerecho (rec circuitoDerecho) cajaSalida
-    where
-        rec = recCircuito cCaja cSerie cParalelo
+  case c of
+    Caja caja -> cCaja caja
+    Serie circuitoInicial circuitoFinal -> cSerie circuitoInicial (rec circuitoInicial) circuitoFinal (rec circuitoFinal)
+    Paralelo cajaEntrada circuitoIzquierdo circuitoDerecho cajaSalida -> cParalelo cajaEntrada circuitoIzquierdo (rec circuitoIzquierdo) circuitoDerecho (rec circuitoDerecho) cajaSalida
+  where
+    rec = recCircuito cCaja cSerie cParalelo
 
 -- 2: foldCircuito
 
 foldCircuito ::
-    (Caja -> b) ->
-    (b -> b -> b) ->
-    (Caja -> b -> b -> Caja -> b) ->
-    Circuito ->
-    b
+  (Caja -> b) ->
+  (b -> b -> b) ->
+  (Caja -> b -> b -> Caja -> b) ->
+  Circuito ->
+  b
 foldCircuito cCaja cSerie cParalelo =
-    recCircuito
-        cCaja
-        (\_ resultadoInicial _ resultadoFinal -> cSerie resultadoInicial resultadoFinal)
-        (\cajaEntrada _ resultadoIzquierdo _ resultadoDerecho cajaSalida -> cParalelo cajaEntrada resultadoIzquierdo resultadoDerecho cajaSalida)
+  recCircuito
+    cCaja
+    (\_ resultadoInicial _ resultadoFinal -> cSerie resultadoInicial resultadoFinal)
+    (\cajaEntrada _ resultadoIzquierdo _ resultadoDerecho cajaSalida -> cParalelo cajaEntrada resultadoIzquierdo resultadoDerecho cajaSalida)
 
 -- 3 invertido
 invertido :: Circuito -> Circuito
 invertido = foldCircuito cajaInvertida serieInvertida paraleloInvertido
-    where
-        cajaInvertida caja = Caja caja
-        serieInvertida resultadoInicial resultadoFinal = Serie resultadoFinal resultadoInicial
-        paraleloInvertido cajaEntrada resultadoIzquierdo resultadoDerecho cajaSalida = Paralelo cajaSalida resultadoDerecho resultadoIzquierdo cajaEntrada
+  where
+    cajaInvertida caja = Caja caja
+    serieInvertida resultadoInicial resultadoFinal = Serie resultadoFinal resultadoInicial
+    paraleloInvertido cajaEntrada resultadoIzquierdo resultadoDerecho cajaSalida = Paralelo cajaSalida resultadoDerecho resultadoIzquierdo cajaEntrada
 
 -- 4: hayCaminoIluminado
 
