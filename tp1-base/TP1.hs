@@ -144,7 +144,14 @@ tienenLaMismaEstructura = foldCircuito cCaja cSerie cParalelo
 -- 10: subCircuitoMásResistente
 
 resistenciaCircuito :: Circuito -> Float
-resistenciaCircuito = undefined
+resistenciaCircuito = foldCircuito cCaja cSerie cParalelo
+  where
+    cCaja Nada = 0
+    cCaja (Bombilla False) = 1
+    cCaja _ = 2
+    cSerie resultadoInicial resultadoFinal = resultadoInicial + resultadoFinal
+    cParalelo cajaEntrada resultadoIzquierdo resultadoDerecho cajaSalida =
+      cCaja cajaEntrada + 1/(1/resultadoIzquierdo + 1/resultadoDerecho) + cCaja cajaSalida
 
 circuitoMásResistente :: Circuito -> Circuito -> Circuito
 circuitoMásResistente circuito1 circuito2 = if resistenciaCircuito circuito1 >= resistenciaCircuito circuito2 

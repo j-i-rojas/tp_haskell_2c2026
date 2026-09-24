@@ -202,9 +202,25 @@ testsTienenLaMismaEstructura = TestList
   ]
 
 testsSubCircuitoMásResistente :: Test
-testsSubCircuitoMásResistente = TestList -- TODO: AGREGAR
-  [
-
+testsSubCircuitoMásResistente = TestList 
+  [ "El circuito más resistente de una caja es la misma caja"
+    ~: subCircuitoMásResistente cajaOn
+    ~?= cajaOn
+  , "El circuito más resistente de una serie con dos cajas resistentes es la misma serie"
+    ~: subCircuitoMásResistente (Serie cajaOff cajaOn)
+    ~?= Serie cajaOff cajaOn
+  , "El circuito más resistente de una serie con una caja resistente y otra no resistente es la misma serie (la resistencia de ambos subcircuitos es la misma)"
+    ~: subCircuitoMásResistente (Serie cajaNada cajaOn)
+    ~?= Serie cajaNada cajaOn
+  , "El circuito más resistente de un paralelo con un solo subcircuito resistente es ese subcircuito"
+    ~: subCircuitoMásResistente (Paralelo Nada cajaNada cajaOn Nada)
+    ~?= cajaOn
+  , "El circuito más resistente de un paralelo con dos subcircuitos resistentes es el más resistente de los dos"
+    ~: subCircuitoMásResistente (Paralelo Nada cajaOn cajaOff off)
+    ~?= cajaOn
+  , "El circuito más resistente de un paralelo con dos cajas en entrada y salida es el mismo paralelo"
+    ~: subCircuitoMásResistente (Paralelo on cajaOn cajaOff on)
+    ~?= (Paralelo on cajaOn cajaOff on)
   ]
 
 tests :: Test
