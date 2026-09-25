@@ -154,7 +154,7 @@ resistenciaCircuito = foldCircuito cCaja cSerie cParalelo
       cCaja cajaEntrada + 1/(1/resultadoIzquierdo + 1/resultadoDerecho) + cCaja cajaSalida
 
 circuitoMásResistente :: Circuito -> Circuito -> Circuito
-circuitoMásResistente circuito1 circuito2 = if resistenciaCircuito circuito1 >= resistenciaCircuito circuito2 
+circuitoMásResistente circuito1 circuito2 = if resistenciaCircuito circuito1 >= resistenciaCircuito circuito2
   then circuito1 else circuito2
 
 subCircuitoMásResistente :: Circuito -> Circuito
@@ -230,7 +230,7 @@ Bombilla False = Bombilla False
 --
 qvq parat todo circ::Circuito: alternado . alternado circ = id circ
 P(circ) = alternado . alternado circ = id circ
-{EXT} 
+{EXT}
 alterando.alternado circ = id circ
 
 Inducción sobre Circuito
@@ -286,7 +286,7 @@ Paralelo (cajaAlternada (cajaAlternada ce)) (alternado.alternado ci) (alternado.
 Paraleo (cajaAlternada (cajaAlternada ce)) (id ci) (id cd) (cajaAlternada (cajaAlternada cs)) = id (Paralelo ce ci cd cs)
 {I}x2
 Paraleo (cajaAlternada (cajaAlternada ce)) ci cd (cajaAlternada (cajaAlternada cs)) = id (Paralelo ce ci cd cs)
-{AUX}x2 
+{AUX}x2
 Paralelo ce ci cd cs = id (Paralelo ce ci cd cs)
 {I}
 id (Paralelo ce ci cd cs) = id (Paralelo ce ci cd cs)
